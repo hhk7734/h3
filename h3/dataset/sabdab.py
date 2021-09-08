@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 _BASE_URL = "http://opig.stats.ox.ac.uk"
 
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 LOG = logging.getLogger(__name__)
 
 
@@ -75,13 +76,13 @@ class SAbDab:
             else "",
         }
         query = requests.get(url=search_url, params=params)
-        LOG.debug("search: %s", query.url)
+        LOG.info("parsing %s", query.url)
         html = BeautifulSoup(query.content, "html.parser")
 
         try:
             href_url = html.find(id="downloads").find("a").get("href")
         except:
-            LOG.error("Failed to find download link in %s", query.url)
+            LOG.error("failed to find download link in %s", query.url)
             raise
 
         summary_file_url = f"{_BASE_URL}{href_url}"
