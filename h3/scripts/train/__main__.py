@@ -1,6 +1,9 @@
 import logging
 import sys
 
+from torch.utils import data
+
+from ...dataset.dataset import H3Dataset
 from ...dataset.sabdab import SAbDab
 from . import Arguments
 
@@ -28,6 +31,26 @@ try:
     if not truncated_pdb_dir.exists():
         summary = SAbDab.read_summary(summary_file=summary_tsv)
         SAbDab.truncate_pdbs(summary=summary, pdb_dir=pdb_dir)
+
+    dataset = H3Dataset(dataset_dir=args.dataset_dir)
+    total_len = len(dataset)
+    train_len = round(total_len * 0.95)
+    valid_len = total_len - train_len
+
+    train_dataset, valid_dataset = data.random_split(
+        dataset, [train_len, valid_len]
+    )
+
+    train_loader = data.DataLoader(
+        train_dataset,
+        batch_size=args.batch_size,
+        collate_fn=H3Dataset.merge_samples_to_minibatch,
+    )
+    valid_loader = data.DataLoader(
+        valid_dataset,
+        batch_size=args.batch_size,
+        collate_fn=H3Dataset.merge_samples_to_minibatch,
+    )
 
 except Exception as e:
     LOG.exception(e)
