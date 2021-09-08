@@ -1,0 +1,10 @@
+# test
+*.pdb
+*.fasta
+train-test/
+
+# temporary files
+__pycache__/
+
+# virtual environment
+venv/
