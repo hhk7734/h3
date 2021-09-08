@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ...utility.arguments import ArgumentsBaseClass, PathAction
+from ...utility.arguments import ArgumentsBaseClass, ExecuteAction, PathAction
 
 
 class Arguments(ArgumentsBaseClass):
@@ -11,6 +11,8 @@ class Arguments(ArgumentsBaseClass):
         self._keys.append("dataset_dir")
         self.batch_size: int
         self._keys.append("batch_size")
+        self.gpu: str
+        self._keys.append("gpu")
 
     def add_arguments(self) -> None:
         super().add_arguments()
@@ -28,6 +30,12 @@ class Arguments(ArgumentsBaseClass):
             type=int,
         )
 
+        self._parser.add_argument(
+            "--gpu",
+            action=ExecuteAction,
+            default=ExecuteAction.YES,
+        )
+
     def validate(self) -> None:
         # pylint: disable=useless-super-delegation
         super().validate()
@@ -37,5 +45,6 @@ class Arguments(ArgumentsBaseClass):
 
         string += f" --dataset_dir {self.dataset_dir}"
         string += f" --batch_size {self.batch_size}"
+        string += f" --gpu {self.gpu}"
 
         return string
